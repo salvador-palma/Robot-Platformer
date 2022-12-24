@@ -46,7 +46,7 @@ public class Movement : MonoBehaviour
     public bool canDash;
     public bool isHurt;
     public bool isInvencible;
-
+    public bool DashReset;
     [Header("Random")]
     public int wallClinged;
     
@@ -123,11 +123,11 @@ public class Movement : MonoBehaviour
                 }
                 else if (isWalled() && act_dir == 0)//walljump
                 {
-
+                    
                     facingRight = !facingRight;
                     anim.SetBool("FacingRight", facingRight);
                     rb.velocity = new Vector3(rb.velocity.x + (wallJumpHorizontalForce * (wallClinged * (-1))), wallJumpForce, 0);
-
+                    canDash = true;
                 }
                 else if (!hasJumped)//doublejump
                 {
@@ -354,14 +354,9 @@ public class Movement : MonoBehaviour
     {
         gameObject.layer = 6;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-        if (facingRight)
-        {
-            anim.Play("Dash_Flip");
-        }
-        else
-        {
-            anim.Play("Dash");
-        }
+       
+        anim.Play("DashPlay");
+        
         
         
         int dir;
@@ -389,7 +384,15 @@ public class Movement : MonoBehaviour
         rb.gravityScale = ogGravity;
         rb.velocity = Vector2.zero;
         isDashing = false;
+
+
+
         if (isGrounded()) { canDash = true; }
+        else if (DashReset)
+        {
+            DashReset = false;
+            canDash = true;
+        }
     }
     void Flip()
     {

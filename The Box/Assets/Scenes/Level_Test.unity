@@ -14560,12 +14560,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5768504656454605640, guid: 145e3c4cb68e2494aa16c6cbbd5ee412, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5768504656454605640, guid: 145e3c4cb68e2494aa16c6cbbd5ee412, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.921655
+      value: -1.31
       objectReference: {fileID: 0}
     - target: {fileID: 5768504656454605640, guid: 145e3c4cb68e2494aa16c6cbbd5ee412, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.96273804
+      value: 2.47
       objectReference: {fileID: 0}
     - target: {fileID: 5768504656454605640, guid: 145e3c4cb68e2494aa16c6cbbd5ee412, type: 3}
       propertyPath: m_LocalPosition.z
@@ -14613,7 +14617,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478641847425990755}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 12.56, y: 6.601, z: 0}
+  m_LocalPosition: {x: 4.54, y: 3.68, z: 0}
   m_LocalScale: {x: 2.184216, y: 2.184216, z: 2.184216}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -14666,9 +14670,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -507448978, guid: 615d42a0deeb03e4c828e006fe4f2257, type: 3}
+  m_Sprite: {fileID: -1889613524, guid: a53228d6cb7325a438d36ae880e6ac6c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
@@ -14885,6 +14889,7 @@ MonoBehaviour:
   canDash: 1
   isHurt: 0
   isInvencible: 0
+  DashReset: 0
   wallClinged: 0
   horizontalAxis: 0
   feet: {fileID: 1478641849042445085}
