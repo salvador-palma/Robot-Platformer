@@ -47,6 +47,8 @@ public class Movement : MonoBehaviour
     public bool isHurt;
     public bool isInvencible;
     public bool DashReset;
+    public bool inEnemy;
+    public bool isDashingExtended;
     [Header("Random")]
     public int wallClinged;
     
@@ -71,6 +73,9 @@ public class Movement : MonoBehaviour
 
     public float ground_speed_x;
 
+    float ogGravity;
+
+    public CameraMovement CamShake;
 
     // Start is called before the first frame update
     void Awake()
@@ -93,6 +98,11 @@ public class Movement : MonoBehaviour
     {
         if (isDashing || isHurt)
         {
+            if (isDashingExtended && !inEnemy)
+            {
+                isDashingExtended = false;
+                EndDash();
+            }
             return;
         }
         if (!stop_player)
@@ -217,6 +227,7 @@ public class Movement : MonoBehaviour
     {
         if (isDashing || isHurt)
         {
+            
             return;
         }
         if (!stop_player)
@@ -352,13 +363,11 @@ public class Movement : MonoBehaviour
     
     public IEnumerator Dash()
     {
+        StartCoroutine(CamShake.Shake(0.1f, 0.05f));
         gameObject.layer = 6;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-       
+        anim.SetBool("Dashing", true);
         anim.Play("DashPlay");
-        
-        
-        
         int dir;
         if (act_dir != 0) { dir = act_dir; }
         else
@@ -372,21 +381,33 @@ public class Movement : MonoBehaviour
                 dir = -1;
             }
         }
-
         canDash = false;
         isDashing = true;
-        float ogGravity = rb.gravityScale;
+        ogGravity = rb.gravityScale;
         rb.gravityScale = 0f;
         rb.velocity = new Vector2(dir * dashingPower, 0f);
+
         yield return new WaitForSeconds(DashTimer);
+
+        if (inEnemy)
+        {
+            isDashingExtended = true;
+        }
+        else
+        {
+            EndDash();
+        }
+
+        
+    }
+    void EndDash()
+    {
+        anim.SetBool("Dashing", false);
         gameObject.layer = 0;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         rb.gravityScale = ogGravity;
         rb.velocity = Vector2.zero;
         isDashing = false;
-
-
-
         if (isGrounded()) { canDash = true; }
         else if (DashReset)
         {

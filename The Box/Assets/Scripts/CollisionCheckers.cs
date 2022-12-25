@@ -52,10 +52,9 @@ public class CollisionCheckers : MonoBehaviour
             {
                 case "Soul":
                     Movement.getInstance().DashReset = true;
+                    Movement.getInstance().inEnemy = true;
                     Enemy e = collision.GetComponent<Enemy>();
-                    
                     e.takeDmg(1);
-                    
                     break;
             }
            
@@ -91,6 +90,16 @@ public class CollisionCheckers : MonoBehaviour
                 
             }
         }
-        
+        else if (collision.CompareTag("Enemy"))
+        {
+            switch (gameObject.name)
+            {
+                case "Soul":
+                    Movement.getInstance().inEnemy = false;
+                    break;
+            }
+
+        }
+
     }
 }
