@@ -103,6 +103,7 @@ public class Movement : MonoBehaviour
                 isDashingExtended = false;
                 EndDash();
             }
+            updateGhost();
             return;
         }
         if (!stop_player)
@@ -167,20 +168,7 @@ public class Movement : MonoBehaviour
 
 
 
-            if (ghostSpawnRateStart > 0)
-            {
-                ghostSpawnRateStart -= Time.deltaTime;
-            }
-            else
-            {
-                GameObject g = Instantiate(ghost);
-                Vector3 pos = transform.position;
-                g.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
-                g.GetComponent<SpriteRenderer>().flipX = GetComponent<SpriteRenderer>().flipX;
-
-                g.transform.position = pos;
-                ghostSpawnRateStart = ghostSpawnRate;
-            }
+            updateGhost();
 
             if (!isWalled())
             {
@@ -220,6 +208,7 @@ public class Movement : MonoBehaviour
                     canTurnBack = false;
                 }
             }
+            
         }
         
     }
@@ -421,10 +410,27 @@ public class Movement : MonoBehaviour
         anim.SetBool("FacingRight", facingRight);
     }
 
+    void updateGhost()
+    {
+        if (ghostSpawnRateStart > 0)
+        {
+            ghostSpawnRateStart -= Time.deltaTime;
+        }
+        else
+        {
+            GameObject g = Instantiate(ghost);
+            Vector3 pos = transform.position;
+            g.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
+            g.GetComponent<SpriteRenderer>().flipX = GetComponent<SpriteRenderer>().flipX;
+
+            g.transform.position = pos;
+            ghostSpawnRateStart = ghostSpawnRate;
+        }
+    }
     public IEnumerator KnockBack(int dir )
     {
         anim.SetBool("Hurt", true);
-        anim.Play("Hurt");
+        anim.Play("HurtPlay");
         isInvencible = true;
         isHurt = true;
 
