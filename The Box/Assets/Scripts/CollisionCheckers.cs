@@ -51,6 +51,7 @@ public class CollisionCheckers : MonoBehaviour
             switch (gameObject.name)
             {
                 case "Soul":
+                    StartCoroutine(Utils.Pause(0.065f));
                     Movement.getInstance().DashReset = true;
                     Movement.getInstance().inEnemy = true;
                     Enemy e = collision.GetComponent<Enemy>();

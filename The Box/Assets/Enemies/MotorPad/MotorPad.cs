@@ -35,6 +35,7 @@ public class MotorPad : Enemy
             case "GroundCheck":
                 if (state == 1)
                 {
+                    Debug.Log("gere");
                     if (isCarrying)
                     {
                         StartCoroutine(Throw());

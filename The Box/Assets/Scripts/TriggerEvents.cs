@@ -17,6 +17,7 @@ public class TriggerEvents : MonoBehaviour
 
     public void OnTriggerExit2D(Collider2D collision)
     {
+        
         e.TriggerHandler(collision.gameObject, gameObject.name, 1);
     }
 

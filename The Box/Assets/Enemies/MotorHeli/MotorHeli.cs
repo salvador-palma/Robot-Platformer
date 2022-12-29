@@ -10,7 +10,7 @@ public class MotorHeli : Enemy
 
     private void Start()
     {
-        base.Init(2);
+        base.Init(20);
         rb = GetComponent<Rigidbody2D>();
     }
 
