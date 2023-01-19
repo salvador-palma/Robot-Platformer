@@ -75,12 +75,7 @@ public class MotorPad : Enemy
         yield return new WaitForSeconds(Throw_Wait);
         GetComponent<Animator>().Play("Throw");
         anim.SetBool("Carry", isCarrying);
-        GameObject plate = gameObject.transform.GetChild(3).gameObject;
-        plate.transform.parent = null;
-        plate.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-        plate.GetComponent<Plates>().hasFather = false;
-        int dir = transform.localScale.x < 0 ? 1 : -1;
-        plate.GetComponent<Rigidbody2D>().velocity = new Vector2(dir * Throw_Force, 1f * Throw_Force);
+        
         yield return new WaitForSeconds(Throw_Wait_Delay);
         Flip();
         stoped = false;
@@ -88,7 +83,12 @@ public class MotorPad : Enemy
 
     public void ThrowPlate()
     {
-        
+        GameObject plate = gameObject.transform.GetChild(3).gameObject;
+        plate.transform.parent = null;
+        plate.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        plate.GetComponent<Plates>().hasFather = false;
+        int dir = transform.localScale.x < 0 ? 1 : -1;
+        plate.GetComponent<Rigidbody2D>().velocity = new Vector2(dir * Throw_Force, 1f * Throw_Force);
     }
 
 

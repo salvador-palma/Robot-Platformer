@@ -49,6 +49,7 @@ public class Movement : MonoBehaviour
     public bool DashReset;
     public bool inEnemy;
     public bool isDashingExtended;
+    bool onWall;
     [Header("Random")]
     public int wallClinged;
     
@@ -135,10 +136,10 @@ public class Movement : MonoBehaviour
                 else if (isWalled() && act_dir == 0)//walljump
                 {
                     
-                    facingRight = !facingRight;
-                    anim.SetBool("FacingRight", facingRight);
-                    rb.velocity = new Vector3(rb.velocity.x + (wallJumpHorizontalForce * (wallClinged * (-1))), wallJumpForce, 0);
+                    int w = facingRight ? 1 : -1;
+                    rb.velocity = new Vector3(rb.velocity.x + (wallJumpHorizontalForce * ( w  * (-1))), wallJumpForce, 0);
                     canDash = true;
+                    Flip();
                 }
                 else if (!hasJumped)//doublejump
                 {
@@ -178,15 +179,8 @@ public class Movement : MonoBehaviour
             }
             else if (!isGrounded())
             {
+                anim.Play("Wall_Slide");
 
-                if (wallClinged == 1)
-                {
-                    anim.Play("Wall_Slide");
-                }
-                else
-                {
-                    anim.Play("Wall_Slide_Flip");
-                }
             }
 
         }
@@ -226,7 +220,8 @@ public class Movement : MonoBehaviour
                 anim.SetInteger("YDir", -1);
                 if (isWalled())
                 {
-                    if (act_dir != wallClinged)
+                    int w = facingRight ? 1 : -1;
+                    if (act_dir != w)
                     {
 
                         rb.velocity = new Vector3(horizontalAxis * speed * Time.deltaTime, rb.velocity.y - gravityDown);
@@ -356,7 +351,7 @@ public class Movement : MonoBehaviour
         gameObject.layer = 6;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
         anim.SetBool("Dashing", true);
-        anim.Play("DashPlay");
+        anim.Play("Dash");
         int dir;
         if (act_dir != 0) { dir = act_dir; }
         else
@@ -404,12 +399,20 @@ public class Movement : MonoBehaviour
             canDash = true;
         }
     }
-    void Flip()
+    public void Flip()
     {
-        facingRight = !facingRight;
-        anim.SetBool("FacingRight", facingRight);
-    }
 
+        facingRight = !facingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1;
+        transform.localScale = scale;
+
+        /*
+        gameObject.GetComponent<SpriteRenderer>().flipX = true;
+        */
+
+    }
+    
     void updateGhost()
     {
         if (ghostSpawnRateStart > 0)
@@ -422,7 +425,7 @@ public class Movement : MonoBehaviour
             Vector3 pos = transform.position;
             g.GetComponent<SpriteRenderer>().sprite = GetComponent<SpriteRenderer>().sprite;
             g.GetComponent<SpriteRenderer>().flipX = GetComponent<SpriteRenderer>().flipX;
-
+            g.transform.localScale = transform.localScale;
             g.transform.position = pos;
             ghostSpawnRateStart = ghostSpawnRate;
         }
@@ -430,7 +433,7 @@ public class Movement : MonoBehaviour
     public IEnumerator KnockBack(int dir )
     {
         anim.SetBool("Hurt", true);
-        anim.Play("HurtPlay");
+        anim.Play("Hurt");
         isInvencible = true;
         isHurt = true;
 

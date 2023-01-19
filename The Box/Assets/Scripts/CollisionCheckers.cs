@@ -27,23 +27,12 @@ public class CollisionCheckers : MonoBehaviour
                 case "ArmLeft":
 
                     GetComponent<ParticleSystem>().emissionRate = 17f;
-                    m.isWall = true;
-                    m.wallClinged = -1;
                     
-                    m.anim.SetBool("Walled", true);
-                    break;
-                case "ArmRight":
-                    GetComponent<ParticleSystem>().emissionRate = 17f;
                     m.isWall = true;
-                    m.wallClinged = 1;
                     m.anim.SetBool("Walled", true);
                     break;
                 
-                    
-                    
-                        
-                        
-                    
+
             }
         }
         else if (collision.CompareTag("Enemy"))
@@ -51,7 +40,7 @@ public class CollisionCheckers : MonoBehaviour
             switch (gameObject.name)
             {
                 case "Soul":
-                    StartCoroutine(Utils.Pause(0.065f));
+                    StartCoroutine(Utils.Pause(0.06f));
                     Movement.getInstance().DashReset = true;
                     Movement.getInstance().inEnemy = true;
                     Enemy e = collision.GetComponent<Enemy>();
@@ -77,17 +66,9 @@ public class CollisionCheckers : MonoBehaviour
                 case "ArmLeft":
                     GetComponent<ParticleSystem>().emissionRate = 0f;
                     m.isWall = false;
-                    m.wallClinged = 0;
                     m.anim.SetBool("Walled", false);
                     break;
-                case "ArmRight":
-                    GetComponent<ParticleSystem>().emissionRate = 0f;
-
-                    m.isWall = false;
-                    m.wallClinged = 0;
-                    m.anim.SetBool("Walled", false);
-
-                    break;
+                
                 
             }
         }
