@@ -41,8 +41,10 @@ public class CollisionCheckers : MonoBehaviour
             {
                 case "Soul":
                     StartCoroutine(Utils.Pause(0.06f));
-                    Movement.getInstance().DashReset = true;
-                    Movement.getInstance().inEnemy = true;
+                    Movement m = Movement.getInstance();
+                    m.DashReset = true;
+                    m.inEnemy = true;
+                    m.DashTimerStart = m.DashTimer;
                     Enemy e = collision.GetComponent<Enemy>();
                     e.takeDmg(1);
                     break;

@@ -32,6 +32,7 @@ public class Movement : MonoBehaviour
     float turnBackWaitTimerStart;
     bool isturnBackWait;
     public float DashTimer;
+    public float DashTimerStart;
     public float DashCooldown;
     public float HurtTimer;
     public float InvencibleTimer;
@@ -99,10 +100,26 @@ public class Movement : MonoBehaviour
     {
         if (isDashing || isHurt)
         {
+            /*
             if (isDashingExtended && !inEnemy)
             {
                 isDashingExtended = false;
                 EndDash();
+            }*/
+            if(DashTimerStart > 0)
+            {
+                DashTimerStart -= Time.deltaTime;
+            }
+            else
+            {
+                if (inEnemy)
+                {
+                    isDashingExtended = true;
+                }
+                else
+                {
+                    EndDash();
+                }
             }
             updateGhost();
             return;
@@ -163,7 +180,8 @@ public class Movement : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Mouse0) && canDash)//DASH
             {
-                StartCoroutine(Dash());
+                //StartCoroutine(Dash());
+                StartDash();
             }
 
 
@@ -348,7 +366,29 @@ public class Movement : MonoBehaviour
         anim.enabled = true;
         GetComponent<Animator>().Play("EndTurnBack");
     }
-    
+    public void StartDash()
+    {
+        StartCoroutine(CamShake.Shake(0.1f, 0.05f));
+        gameObject.layer = 6;
+        soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+        anim.SetBool("Dashing", true);
+        anim.Play("Dash");
+        int dir;
+        if (act_dir != 0) { dir = act_dir; }
+        else
+        {
+            dir = facingRight ? 1 : -1;
+        }
+        canDash = false;
+        ogGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(dir * dashingPower, 0f);
+        isDashing = true;
+
+        DashTimerStart = DashTimer;
+
+    }
+    /*
     public IEnumerator Dash()
     {
         StartCoroutine(CamShake.Shake(0.1f, 0.05f));
@@ -360,14 +400,8 @@ public class Movement : MonoBehaviour
         if (act_dir != 0) { dir = act_dir; }
         else
         {
-            if (facingRight)
-            {
-                dir = 1;
-            }
-            else
-            {
-                dir = -1;
-            }
+            dir = facingRight ? 1 : -1;
+
         }
         canDash = false;
         isDashing = true;
@@ -388,6 +422,7 @@ public class Movement : MonoBehaviour
 
         
     }
+    */
     void EndDash()
     {
         anim.SetBool("Dashing", false);
