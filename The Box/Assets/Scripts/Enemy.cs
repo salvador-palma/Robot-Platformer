@@ -6,13 +6,17 @@ public abstract class Enemy : MonoBehaviour
 {
     public int Health;
     public GameObject hurtParticle;
+    public GameObject deathParticle;
     protected virtual void Init(int Health)
     {
         hurtParticle = Resources.Load<GameObject>("Hitted");
+        deathParticle = Resources.Load<GameObject>("Smoke Particle");
         this.Health = Health;
     }
     public void Die()
     {
+        GameObject go = Instantiate(deathParticle);
+        go.transform.position = transform.position;
         Destroy(this.gameObject);
     }
     public void takeDmg(int amount)

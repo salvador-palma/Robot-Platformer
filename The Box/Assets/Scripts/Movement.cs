@@ -321,13 +321,16 @@ public class Movement : MonoBehaviour
     }
     private void EndTurnBack()
     {
+
         
-        //yhmain.transform.DOShakePosition(.2f, .5f, 14, 90, false, true);
+
         turnBackWaitTimerStart = turnBackWaitTimer;
         isturnBackWait = true;
     }
     public IEnumerator GoBack(GameObject[] go)
     {
+        FindObjectOfType<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));
+        sprRenderer.color = Color.cyan;
         for (int i = go.Length-1; i >= 0; i--)
         {
             if (go[i] != null)
@@ -336,11 +339,12 @@ public class Movement : MonoBehaviour
                 transform.position = g.transform.position;
                 sprRenderer.flipX = g.GetComponent<SpriteRenderer>().flipX;
                 sprRenderer.sprite = g.GetComponent<SpriteRenderer>().sprite;
-
+                
                 Destroy(go[i]);
                 yield return new WaitForSecondsRealtime(rollBack);
             }
         }
+        sprRenderer.color = Color.white;
         anim.enabled = true;
         GetComponent<Animator>().Play("EndTurnBack");
     }
