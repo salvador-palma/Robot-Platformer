@@ -151,7 +151,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1396971484, guid: 384d61863acdb874cb99081c4a090fb0, type: 3}
+  m_Sprite: {fileID: -1146055881, guid: 384d61863acdb874cb99081c4a090fb0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -176,6 +176,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Health: 10
   hurtParticle: {fileID: 0}
+  deathParticle: {fileID: 0}
   speed: 80
 --- !u!61 &5768504656454605646
 BoxCollider2D:

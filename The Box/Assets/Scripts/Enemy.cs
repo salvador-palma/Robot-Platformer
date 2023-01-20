@@ -37,7 +37,9 @@ public abstract class Enemy : MonoBehaviour
     public void Hurt()
     {
         GameObject go = Instantiate(hurtParticle);
-        go.transform.position = transform.position;
+        Vector3 v = transform.position;
+        v.z = 2f;
+        go.transform.position = v;
         GetComponent<Animator>().Play("Hurt");
     }
 

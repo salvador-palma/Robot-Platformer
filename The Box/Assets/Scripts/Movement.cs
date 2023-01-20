@@ -347,7 +347,7 @@ public class Movement : MonoBehaviour
     }
     public IEnumerator GoBack(GameObject[] go)
     {
-        FindObjectOfType<RippleEffect>().Emit(Camera.main.WorldToViewportPoint(transform.position));
+        FindObjectOfType<CameraMaterial>().Emit(Camera.main.WorldToViewportPoint(transform.position), 0.5f, 0.0075f);
         sprRenderer.color = Color.cyan;
         for (int i = go.Length-1; i >= 0; i--)
         {
@@ -369,6 +369,7 @@ public class Movement : MonoBehaviour
     public void StartDash()
     {
         StartCoroutine(CamShake.Shake(0.1f, 0.05f));
+        
         gameObject.layer = 6;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
         anim.SetBool("Dashing", true);
