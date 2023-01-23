@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class Water : MonoBehaviour
 {
-    public List<WaterNode> springs = new List<WaterNode>();
-    public int NodeAmount = 5;
-    public float default_stiffness = 0.5f;
-    public float default_decay = 0.9f;
-    public float spredForce;
+    List<WaterNode> springs = new List<WaterNode>();
+    int NodeAmount;
 
+    [Header("Dimensions and Density")]
+    public int NodesPerUnit;
     public Vector2Int meshSize;
 
-    Mesh mesh;
-    public Vector3[] vertices;
-    
-    public int[] triangles;
-    public MeshFilter filter;
 
+    [Header("Force Wave Settings")]
+    public float default_stiffness = 0.5f;
+    public float default_decay = 0.9f;
+    public float spredForce = 0.5f;
+
+    
+
+    Mesh mesh;
+    Vector3[] vertices;
+    
+    int[] triangles;
+    MeshFilter filter;
+
+    [Header("Sin Wave Settings")]
     public bool wavy = false;
     public float waveSpeed;
     public float waveLength;
@@ -26,22 +34,46 @@ public class Water : MonoBehaviour
     Bounds bounds;
     public void Start()
     {
-        
+        filter = GetComponent<MeshFilter>();
+        Vector2 vec = transform.localScale;
+        vec.x *= 1 / (float)NodesPerUnit;
+        transform.localScale = vec;
+        NodeAmount = meshSize.x * NodesPerUnit;
+        NodeAmount++;
+        meshSize = new Vector2Int(NodeAmount, meshSize.y);
         for(int i = 0; i!=NodeAmount; i++)
         {
             springs.Add(new WaterNode(default_stiffness, default_decay));
         }
+        
         SetUpMesh(filter.mesh.bounds);
+        
     }
+    
     public void Update()
     {
-        //UpdateNeighbours();
-        if(bounds != null)
+
+        SetUpMesh(bounds);
+        UpdateNodes();
+        if (Input.GetKeyDown(KeyCode.P))
         {
-            SetUpMesh(bounds);
+            springs.ToArray()[2].SetForce(0.5f);
+            springs.ToArray()[3].SetForce(0.5f);
+            springs.ToArray()[4].SetForce(0.5f);
         }
+        UpdateNeighbours();
+
+
+
         
 
+    }
+    void UpdateNodes()
+    {
+        foreach(WaterNode node in springs)
+        {
+            node.UpdateHeight();
+        }
     }
     void UpdateNeighbours()
     {
@@ -57,7 +89,32 @@ public class Water : MonoBehaviour
             }
         }
     }
+    void UpdateMesh(Bounds b)
+    {
+        if (Application.isPlaying)
+        {
+            if (wavy)
+            {
+                for (int i = 0; i < springs.Count; i++)
+                {
+                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
+                    vertices[topRow + i] += Vector3.up * (springs[i].height + GetWaveOffset(i));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < springs.Count; i++)
+                {
+                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
+                    vertices[topRow + i] += Vector3.up * (springs[i].height);
+                }
+            }
+            
+            mesh.vertices = vertices;
+            filter.mesh = mesh;
 
+        }
+    }
     void SetUpMesh(Bounds r)
     {
         Vector2 min = (Vector2)(transform.worldToLocalMatrix * r.min) - (Vector2)transform.position;
@@ -116,10 +173,6 @@ public class Water : MonoBehaviour
             vert++;
         }
         mesh.Clear();
-        foreach(Vector2 v in vertices)
-        {
-           // Debug.Log(v);
-        }
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         filter.mesh = mesh;

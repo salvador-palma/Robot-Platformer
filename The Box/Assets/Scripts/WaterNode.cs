@@ -18,7 +18,7 @@ public class WaterNode
         this.stiff = stiff;
         this.decay = decay;
     }
-    public void Update()
+    public void UpdateHeight()
     {
         force = -stiff * height;
         velocity += force;

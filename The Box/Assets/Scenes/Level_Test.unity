@@ -264,7 +264,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -4026,18 +4026,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958cb2a920a0e994ba25e927b2e4e508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NodeAmount: 16
-  default_stiffness: 0.5
+  NodesPerUnit: 3
+  meshSize: {x: 8, y: 2}
+  default_stiffness: 0.05
   default_decay: 0.9
-  spredForce: 0.5
-  meshSize: {x: 16, y: 2}
-  vertices: []
-  triangles: 
-  filter: {fileID: 878905483}
-  wavy: 0
+  spredForce: 0.3
+  wavy: 1
   waveSpeed: 1
   waveLength: 10
-  waveHeight: -0.5
+  waveHeight: -0.1
 --- !u!33 &878905483
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -4063,7 +4060,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 1025
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 3b584c3ff874c16478659e6462fc3fc8, type: 2}
@@ -4096,7 +4093,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 878905481}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5, y: -2, z: 0}
+  m_LocalPosition: {x: 5, y: -2, z: -0.61}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11909,7 +11906,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478641847425990755}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.49, y: 8.23, z: 0}
+  m_LocalPosition: {x: 5.64, y: -1.36, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11961,7 +11958,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_Sprite: {fileID: -852851831, guid: 84c388a6facf2cf47b32f0110184e268, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
