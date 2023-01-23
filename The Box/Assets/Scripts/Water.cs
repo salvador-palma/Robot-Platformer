@@ -13,11 +13,11 @@ public class Water : MonoBehaviour
 
 
     [Header("Force Wave Settings")]
-    public float default_stiffness = 0.5f;
-    public float default_decay = 0.9f;
-    public float spredForce = 0.5f;
+    public static float default_stiffness = 0.05f;
+    public static float default_decay = 0.1f;
+    public float spredForce = 0.9f;
 
-    
+    public GameObject WaterNode;
 
     Mesh mesh;
     Vector3[] vertices;
@@ -39,30 +39,27 @@ public class Water : MonoBehaviour
         vec.x *= 1 / (float)NodesPerUnit;
         transform.localScale = vec;
         NodeAmount = meshSize.x * NodesPerUnit;
-        NodeAmount++;
+        NodeAmount+=2;
         meshSize = new Vector2Int(NodeAmount, meshSize.y);
         for(int i = 0; i!=NodeAmount; i++)
         {
-            springs.Add(new WaterNode(default_stiffness, default_decay));
+            GameObject go = Instantiate(WaterNode, transform.position, Quaternion.identity);
+            go.transform.parent = gameObject.transform;
+            springs.Add(go.GetComponent<WaterNode>());
         }
         
         SetUpMesh(filter.mesh.bounds);
-        
+        SetUpWaterNodes();
     }
     
     public void Update()
     {
 
         SetUpMesh(bounds);
+        SetUpWaterNodes();
         UpdateNodes();
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            springs.ToArray()[2].SetForce(0.5f);
-            springs.ToArray()[3].SetForce(0.5f);
-            springs.ToArray()[4].SetForce(0.5f);
-        }
         UpdateNeighbours();
-
+       
 
 
         
@@ -120,7 +117,7 @@ public class Water : MonoBehaviour
         Vector2 min = (Vector2)(transform.worldToLocalMatrix * r.min) - (Vector2)transform.position;
         Vector2 max = (Vector2)(transform.worldToLocalMatrix * r.max) - (Vector2)transform.position;
 
-        mesh = new Mesh(); //defined\
+        mesh = new Mesh(); 
         vertices = new Vector3[(meshSize.x + 1) * (meshSize.y + 1)];
         for(int i =0, y=0; y <= meshSize.y; y++)
         {
@@ -175,10 +172,21 @@ public class Water : MonoBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
+        mesh.uv = new Vector2[4 * 8 * 2];
         filter.mesh = mesh;
         bounds = mesh.bounds;
     }
 
+    void SetUpWaterNodes()
+    {
+        WaterNode[] nodes = springs.ToArray();
+
+        for (int i = 0; i < springs.Count; i++)
+        {
+            int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
+            nodes[i].transform.localPosition = vertices[topRow + i];
+        }
+    }
     float GetWaveOffset(int i)
     {
         return Mathf.Sin((Time.time * waveSpeed) + (i * (1f / waveLength))) * waveHeight;

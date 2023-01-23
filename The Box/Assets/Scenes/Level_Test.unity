@@ -4026,11 +4026,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 958cb2a920a0e994ba25e927b2e4e508, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NodesPerUnit: 3
+  NodesPerUnit: 2
   meshSize: {x: 8, y: 2}
-  default_stiffness: 0.05
-  default_decay: 0.9
   spredForce: 0.3
+  WaterNode: {fileID: 789408367418298442, guid: 57f677417c4ce6c46996d167b22c80d4, type: 3}
   wavy: 1
   waveSpeed: 1
   waveLength: 10
@@ -4063,7 +4062,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1025
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3b584c3ff874c16478659e6462fc3fc8, type: 2}
+  - {fileID: 2100000, guid: 365035201839c2444ba31006834b2257, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -11906,7 +11905,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478641847425990755}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.64, y: -1.36, z: 0}
+  m_LocalPosition: {x: 4.57, y: 1.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
