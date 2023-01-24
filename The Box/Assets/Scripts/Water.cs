@@ -9,22 +9,27 @@ public class Water : MonoBehaviour
 
     [Header("Dimensions and Density")]
     public int NodesPerUnit;
-    public Vector2Int meshSize;
-
+    public Vector2Int Size;
+    public float WaterLevelOffset;
 
     [Header("Force Wave Settings")]
     public static float default_stiffness = 0.05f;
     public static float default_decay = 0.1f;
     public float spredForce = 0.9f;
 
-    public GameObject WaterNode;
+    GameObject WaterNode;
+
+    [Header("Foam Settings")]
+    public bool hasFoam = true;
+    public float foamHeight;
+    public GameObject foam;
 
     Mesh mesh;
     Vector3[] vertices;
     
     int[] triangles;
-    MeshFilter filter;
-    MeshFilter foam;
+    MeshFilter waterFilter;
+    MeshFilter foamFilter;
     [Header("Sin Wave Settings")]
     public bool wavy = false;
     public float waveSpeed;
@@ -34,14 +39,21 @@ public class Water : MonoBehaviour
     Bounds bounds;
     public void Start()
     {
-        foam = transform.GetChild(0).GetComponent<MeshFilter>();
-        filter = GetComponent<MeshFilter>();
+        WaterNode = Resources.Load<GameObject>("WaterNode");
+        if (hasFoam)
+        {
+            GameObject go = Instantiate(foam, transform);
+            go.transform.position = new Vector3(go.transform.position.x, go.transform.position.y + foamHeight, go.transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y - foamHeight + WaterLevelOffset, transform.position.z);
+            foamFilter = transform.GetChild(0).GetComponent<MeshFilter>();
+        }
+        waterFilter = GetComponent<MeshFilter>();
         Vector2 vec = transform.localScale;
         vec.x *= 1 / (float)NodesPerUnit;
         transform.localScale = vec;
-        NodeAmount = meshSize.x * NodesPerUnit;
+        NodeAmount = Size.x * NodesPerUnit;
         NodeAmount+=2;
-        meshSize = new Vector2Int(NodeAmount, meshSize.y);
+        Size = new Vector2Int(NodeAmount, Size.y);
         for(int i = 0; i!=NodeAmount; i++)
         {
             GameObject go = Instantiate(WaterNode, transform.position, Quaternion.identity);
@@ -49,22 +61,16 @@ public class Water : MonoBehaviour
             springs.Add(go.GetComponent<WaterNode>());
         }
         
-        SetUpMesh(filter.mesh.bounds);
-        SetUpWaterNodes();
+        UpdateMesh();
+        UpdateWaterNodes();
     }
     
     public void Update()
     {
-
-        SetUpMesh(bounds);
-        SetUpWaterNodes();
+        UpdateMesh();
+        UpdateWaterNodes();
         UpdateNodes();
-        UpdateNeighbours();
-       
-
-
-        
-
+        UpdateNeighbourNodes();
     }
     void UpdateNodes()
     {
@@ -73,7 +79,7 @@ public class Water : MonoBehaviour
             node.UpdateHeight();
         }
     }
-    void UpdateNeighbours()
+    void UpdateNeighbourNodes()
     {
         for (int i = 0; i < springs.Count; i++)
         {
@@ -87,42 +93,14 @@ public class Water : MonoBehaviour
             }
         }
     }
-    void UpdateMesh(Bounds b)
+    
+    void UpdateMesh()
     {
-        if (Application.isPlaying)
-        {
-            if (wavy)
-            {
-                for (int i = 0; i < springs.Count; i++)
-                {
-                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
-                    vertices[topRow + i] += Vector3.up * (springs[i].height + GetWaveOffset(i));
-                }
-            }
-            else
-            {
-                for (int i = 0; i < springs.Count; i++)
-                {
-                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
-                    vertices[topRow + i] += Vector3.up * (springs[i].height);
-                }
-            }
-            
-            mesh.vertices = vertices;
-            filter.mesh = mesh;
-
-        }
-    }
-    void SetUpMesh(Bounds r)
-    {
-        Vector2 min = (Vector2)(transform.worldToLocalMatrix * r.min) - (Vector2)transform.position;
-        Vector2 max = (Vector2)(transform.worldToLocalMatrix * r.max) - (Vector2)transform.position;
-
         mesh = new Mesh(); 
-        vertices = new Vector3[(meshSize.x + 1) * (meshSize.y + 1)];
-        for(int i =0, y=0; y <= meshSize.y; y++)
+        vertices = new Vector3[(Size.x + 1) * (Size.y + 1)];
+        for(int i =0, y=0; y <= Size.y; y++)
         {
-            for(int x = 0; x <= meshSize.x; x++)
+            for(int x = 0; x <= Size.x; x++)
             {
                 vertices[i] = new Vector3(x, y, 0);
                 i++;
@@ -135,15 +113,15 @@ public class Water : MonoBehaviour
             {
                 for (int i = 0; i < springs.Count; i++)
                 {
-                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
-                    vertices[topRow + i] += Vector3.up * (springs[i].height + GetWaveOffset(i));
+                    int topRow = (Size.x * (Size.y + 1)) - Size.x + 1;
+                    vertices[topRow + i] += Vector3.up * (springs[i].height + SinWaveOffset(i));
                 }
             }
             else
             {
                 for (int i = 0; i < springs.Count; i++)
                 {
-                    int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
+                    int topRow = (Size.x * (Size.y + 1)) - Size.x + 1;
                     vertices[topRow + i] += Vector3.up * (springs[i].height);
                 }
             }
@@ -152,19 +130,19 @@ public class Water : MonoBehaviour
 
         }
 
-        triangles = new int[meshSize.x * meshSize.y * 6];
+        triangles = new int[Size.x * Size.y * 6];
         int vert = 0;
         int tris = 0;
-        for (int z = 0; z < meshSize.y; z++)
+        for (int z = 0; z < Size.y; z++)
         {
-            for (int x = 0; x < meshSize.x; x++)
+            for (int x = 0; x < Size.x; x++)
             {
                 triangles[tris + 0] = vert + 0;
-                triangles[tris + 1] = vert + meshSize.x + 1;
+                triangles[tris + 1] = vert + Size.x + 1;
                 triangles[tris + 2] = vert + 1;
                 triangles[tris + 3] = vert + 1;
-                triangles[tris + 4] = vert + meshSize.x + 1;
-                triangles[tris + 5] = vert + meshSize.x + 2;
+                triangles[tris + 4] = vert + Size.x + 1;
+                triangles[tris + 5] = vert + Size.x + 2;
                 vert++;
                 tris += 6;
             }
@@ -173,32 +151,22 @@ public class Water : MonoBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-
-        Vector2[] uvs = new Vector2[vertices.Length];
-        
-        /*
-        for (int i = 0; i < uvs.Length; i++)
-        {
-            uvs[i] = new Vector2(vertices[i].x, vertices[i].y);
-        }*/
-        mesh.uv = uvs;
-
-        filter.mesh = mesh;
-        foam.mesh = mesh;
+        waterFilter.mesh = mesh;
+        if (hasFoam) { foamFilter.mesh = mesh; }
         bounds = mesh.bounds;
     }
 
-    void SetUpWaterNodes()
+    void UpdateWaterNodes()
     {
         WaterNode[] nodes = springs.ToArray();
 
         for (int i = 0; i < springs.Count; i++)
         {
-            int topRow = (meshSize.x * (meshSize.y + 1)) - meshSize.x + 1;
+            int topRow = (Size.x * (Size.y + 1)) - Size.x + 1;
             nodes[i].transform.localPosition = vertices[topRow + i];
         }
     }
-    float GetWaveOffset(int i)
+    float SinWaveOffset(int i)
     {
         return Mathf.Sin((Time.time * waveSpeed) + (i * (1f / waveLength))) * waveHeight;
     }

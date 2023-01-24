@@ -60,11 +60,11 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaClip: 0
-    - _Blend: 0
+    - _Blend: 2
     - _BlendOp: 0
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DstBlend: 10
+    - _DstBlend: 1
     - _EnableExternalAlpha: 0
     - _QueueOffset: 0
     - _SampleGI: 0
@@ -72,8 +72,8 @@ Material:
     - _Surface: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 1, g: 1, b: 1, a: 0.19215687}
-    - _Color: {r: 1, g: 1, b: 1, a: 0.19215687}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 0.48235294}
+    - _Color: {r: 1, g: 1, b: 1, a: 0.48235294}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
