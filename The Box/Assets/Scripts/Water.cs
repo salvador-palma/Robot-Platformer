@@ -24,7 +24,7 @@ public class Water : MonoBehaviour
     
     int[] triangles;
     MeshFilter filter;
-
+    MeshFilter foam;
     [Header("Sin Wave Settings")]
     public bool wavy = false;
     public float waveSpeed;
@@ -34,6 +34,7 @@ public class Water : MonoBehaviour
     Bounds bounds;
     public void Start()
     {
+        foam = transform.GetChild(0).GetComponent<MeshFilter>();
         filter = GetComponent<MeshFilter>();
         Vector2 vec = transform.localScale;
         vec.x *= 1 / (float)NodesPerUnit;
@@ -172,8 +173,18 @@ public class Water : MonoBehaviour
         mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = triangles;
-        mesh.uv = new Vector2[4 * 8 * 2];
+
+        Vector2[] uvs = new Vector2[vertices.Length];
+        
+        /*
+        for (int i = 0; i < uvs.Length; i++)
+        {
+            uvs[i] = new Vector2(vertices[i].x, vertices[i].y);
+        }*/
+        mesh.uv = uvs;
+
         filter.mesh = mesh;
+        foam.mesh = mesh;
         bounds = mesh.bounds;
     }
 

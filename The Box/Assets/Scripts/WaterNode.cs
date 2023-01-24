@@ -59,7 +59,7 @@ public class WaterNode : MonoBehaviour
             {
                 if (collision.GetComponent<Rigidbody2D>().velocity.y >= 0)
                 {
-                    SetForce(massForce);
+                    SetForce(massForce/2);
                 }
                 else
                 {
