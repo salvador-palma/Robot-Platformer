@@ -14,7 +14,7 @@ public class WaterNode : MonoBehaviour
     [HideInInspector] public float decay;
 
     public static float TimeDelay = 0.5f;
-    public static float massForce = 10f;
+    public static float massForce = 0.2f;
     float TimeDelayStart;
     bool inForce;
     public void Start()
@@ -63,7 +63,7 @@ public class WaterNode : MonoBehaviour
                 }
                 else
                 {
-                    SetForce(-massForce);
+                    SetForce(-massForce/2);
                 }
             }
             

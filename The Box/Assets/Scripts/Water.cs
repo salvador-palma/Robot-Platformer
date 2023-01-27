@@ -13,9 +13,9 @@ public class Water : MonoBehaviour
     public float WaterLevelOffset;
 
     [Header("Force Wave Settings")]
-    public static float default_stiffness = 0.05f;
-    public static float default_decay = 0.1f;
-    public float spredForce = 0.9f;
+    public static float default_stiffness = 0.01f;
+    public static float default_decay = 0.99f;
+    public float spredForce = 0.3f;
 
     GameObject WaterNode;
 
@@ -35,10 +35,11 @@ public class Water : MonoBehaviour
     public float waveSpeed;
     public float waveLength;
     public float waveHeight;
-
     Bounds bounds;
+    BoxCollider2D collider;
     public void Start()
     {
+        collider = GetComponent<BoxCollider2D>();
         WaterNode = Resources.Load<GameObject>("WaterNode");
         if (hasFoam)
         {
@@ -53,8 +54,11 @@ public class Water : MonoBehaviour
         transform.localScale = vec;
         NodeAmount = Size.x * NodesPerUnit;
         NodeAmount+=2;
+        
         Size = new Vector2Int(NodeAmount, Size.y);
-        for(int i = 0; i!=NodeAmount; i++)
+        collider.size = Size;
+        collider.offset = new Vector2(Size.x / 2, Size.y / 2);
+        for (int i = 0; i!=NodeAmount; i++)
         {
             GameObject go = Instantiate(WaterNode, transform.position, Quaternion.identity);
             go.transform.parent = gameObject.transform;
@@ -171,4 +175,6 @@ public class Water : MonoBehaviour
         return Mathf.Sin((Time.time * waveSpeed) + (i * (1f / waveLength))) * waveHeight;
     }
 
+
+   
 }

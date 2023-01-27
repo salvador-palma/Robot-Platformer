@@ -50,6 +50,7 @@ public class Movement : MonoBehaviour
     public bool DashReset;
     public bool inEnemy;
     public bool isDashingExtended;
+    public bool onWater;
     bool onWall;
     [Header("Random")]
     public int wallClinged;
@@ -100,12 +101,6 @@ public class Movement : MonoBehaviour
     {
         if (isDashing || isHurt)
         {
-            /*
-            if (isDashingExtended && !inEnemy)
-            {
-                isDashingExtended = false;
-                EndDash();
-            }*/
             if(DashTimerStart > 0)
             {
                 DashTimerStart -= Time.deltaTime;
@@ -146,9 +141,13 @@ public class Movement : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 anim.SetBool("Jumped", true);
-                if (isGrounded())//jump
+                if (isGrounded() || onWater)//jump
                 {
                     rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                    if (onWater)
+                    {
+                        anim.Play("SwimReset");
+                    }
                 }
                 else if (isWalled() && act_dir == 0)//walljump
                 {
@@ -195,8 +194,9 @@ public class Movement : MonoBehaviour
                 if (facingRight && act_dir == -1) { Flip(); }
                 if (!facingRight && act_dir == 1) { Flip(); }
             }
-            else if (!isGrounded())
+            else if (!isGrounded() && !onWater)
             {
+                
                 anim.Play("Wall_Slide");
 
             }
@@ -334,7 +334,7 @@ public class Movement : MonoBehaviour
         }
        
         StartCoroutine(GoBack(clones));
-       // main.GetComponent<RippleEffect>().Emit(0.5f, 0.5f);
+       
        
     }
     private void EndTurnBack()
@@ -389,50 +389,16 @@ public class Movement : MonoBehaviour
         DashTimerStart = DashTimer;
 
     }
-    /*
-    public IEnumerator Dash()
-    {
-        StartCoroutine(CamShake.Shake(0.1f, 0.05f));
-        gameObject.layer = 6;
-        soul.gameObject.GetComponent<BoxCollider2D>().enabled = true;
-        anim.SetBool("Dashing", true);
-        anim.Play("Dash");
-        int dir;
-        if (act_dir != 0) { dir = act_dir; }
-        else
-        {
-            dir = facingRight ? 1 : -1;
-
-        }
-        canDash = false;
-        isDashing = true;
-        ogGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
-        rb.velocity = new Vector2(dir * dashingPower, 0f);
-
-        yield return new WaitForSeconds(DashTimer);
-
-        if (inEnemy)
-        {
-            isDashingExtended = true;
-        }
-        else
-        {
-            EndDash();
-        }
-
-        
-    }
-    */
     void EndDash()
     {
+        if (onWater) { anim.Play("SwimReset"); }
         anim.SetBool("Dashing", false);
         gameObject.layer = 0;
         soul.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         rb.gravityScale = ogGravity;
         rb.velocity = Vector2.zero;
         isDashing = false;
-        if (isGrounded()) { canDash = true; }
+        if (isGrounded() || onWater) { canDash = true; }
         else if (DashReset)
         {
             DashReset = false;
@@ -446,11 +412,6 @@ public class Movement : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
-
-        /*
-        gameObject.GetComponent<SpriteRenderer>().flipX = true;
-        */
-
     }
     
     void updateGhost()
@@ -491,6 +452,41 @@ public class Movement : MonoBehaviour
         Health -= n;
         if(Health <= 0) { Debug.Log("Dead"); }
     }
+
+    float gravityUpWater = 0.1f;
+    float gravityDownWater = 0.1f;
+    int jumpForceWater = 6;
+    float speedWater = 200;
+    public void OnWater()
+    {
+        switchWaterSettings();
+        onWater = true;
+    }
+    public void OffWater()
+    {
+        switchWaterSettings();
+        onWater = false;
+    }
+    public void switchWaterSettings()
+    {
+        float temp = gravityUp;
+        gravityUp = gravityUpWater;
+        gravityUpWater = temp;
+
+        temp = gravityDown;
+        gravityDown = gravityDownWater;
+        gravityDownWater = temp;
+
+        int tempint = jumpForce;
+        jumpForce = jumpForceWater;
+        jumpForceWater = tempint;
+
+        temp = speed;
+        speed = speedWater;
+        speedWater = temp;
+    }
+    
+
 }
 
 
