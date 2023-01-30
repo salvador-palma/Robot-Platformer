@@ -11,12 +11,23 @@ public class Movement : MonoBehaviour
     public int Health;
 
     [Header("Settings")]
+    private float speedActive;
+    private int jumpForceActive;
+    private float gravityDownActive;
+    private float gravityUpActive;
+
     public float speed;
     public int jumpForce;
-    public int doubleJumpForce;
-    public float jumpCancelForce;
     public float gravityDown;
     public float gravityUp;
+
+    float speedWater = 200;
+    int jumpForceWater = 6;
+    float gravityDownWater = 0.05f;
+    float gravityUpWater = 0.1f;
+    
+    public int doubleJumpForce;
+    public float jumpCancelForce;
     public float rollBack;
     public float wallSlideSpeed;
     public float wallJumpForce;
@@ -51,6 +62,8 @@ public class Movement : MonoBehaviour
     public bool inEnemy;
     public bool isDashingExtended;
     public bool onWater;
+    public bool headAboveWater;
+    public bool onSurface;
     bool onWall;
     [Header("Random")]
     public int wallClinged;
@@ -87,6 +100,13 @@ public class Movement : MonoBehaviour
         INSTANCE = this;
         anim = GetComponent<Animator>();
         sprRenderer = GetComponent<SpriteRenderer>();
+    }
+    private void Start()
+    {
+        jumpForceActive = jumpForce;
+        speedActive = speed;
+        gravityDownActive = gravityDown;
+        gravityUpActive = gravityUp;
     }
     public static Movement getInstance()
     {
@@ -143,7 +163,7 @@ public class Movement : MonoBehaviour
                 anim.SetBool("Jumped", true);
                 if (isGrounded() || onWater)//jump
                 {
-                    rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                    rb.velocity = new Vector2(rb.velocity.x, jumpForceActive);
                     if (onWater)
                     {
                         anim.Play("SwimReset");
@@ -242,7 +262,7 @@ public class Movement : MonoBehaviour
                     if (act_dir != w)
                     {
 
-                        rb.velocity = new Vector3(horizontalAxis * speed * Time.deltaTime, rb.velocity.y - gravityDown);
+                        rb.velocity = new Vector3(horizontalAxis * speedActive * Time.deltaTime, rb.velocity.y - gravityDownActive);
                     }
                     else
                     {
@@ -253,11 +273,11 @@ public class Movement : MonoBehaviour
                 {
                     if (act_dir != 0)
                     {
-                        rb.velocity = new Vector2(horizontalAxis * speed * Time.deltaTime, rb.velocity.y - gravityDown);
+                        rb.velocity = new Vector2(horizontalAxis * speedActive * Time.deltaTime, rb.velocity.y - gravityDownActive);
                     }
                     else
                     {
-                        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityDown);
+                        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityDownActive);
                     }
                 }
             }
@@ -266,12 +286,12 @@ public class Movement : MonoBehaviour
                 anim.SetInteger("YDir", 1);
                 if (act_dir != 0)
                     {
-                        rb.velocity = new Vector2(horizontalAxis * speed * Time.deltaTime, rb.velocity.y - gravityUp);
+                        rb.velocity = new Vector2(horizontalAxis * speedActive * Time.deltaTime, rb.velocity.y - gravityUpActive);
                     
                     }
                     else
                     {
-                        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityUp);
+                        rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityUpActive);
                     }
             }
             else if (isGrounded())
@@ -281,7 +301,7 @@ public class Movement : MonoBehaviour
                 if (horizontalAxis != 0) 
                 { 
                     anim.SetBool("Moving", true);
-                    rb.velocity = new Vector2(horizontalAxis * speed * Time.deltaTime, rb.velocity.y);
+                    rb.velocity = new Vector2(horizontalAxis * speedActive * Time.deltaTime, rb.velocity.y);
 
                 } 
                 else 
@@ -453,38 +473,42 @@ public class Movement : MonoBehaviour
         if(Health <= 0) { Debug.Log("Dead"); }
     }
 
-    float gravityUpWater = 0.1f;
-    float gravityDownWater = 0.1f;
-    int jumpForceWater = 6;
-    float speedWater = 200;
+    
     public void OnWater()
     {
-        switchWaterSettings();
+        switchWaterSettings(true);
+        anim.SetBool("Water", true);
         onWater = true;
     }
     public void OffWater()
     {
-        switchWaterSettings();
+        switchWaterSettings(false);
+        anim.SetBool("Water", false);
         onWater = false;
     }
-    public void switchWaterSettings()
+    public void switchWaterSettings(bool wentInWater)
     {
-        float temp = gravityUp;
-        gravityUp = gravityUpWater;
-        gravityUpWater = temp;
-
-        temp = gravityDown;
-        gravityDown = gravityDownWater;
-        gravityDownWater = temp;
-
-        int tempint = jumpForce;
-        jumpForce = jumpForceWater;
-        jumpForceWater = tempint;
-
-        temp = speed;
-        speed = speedWater;
-        speedWater = temp;
+        if (wentInWater)
+        {
+            speedActive = speedWater;
+            jumpForceActive = jumpForceWater;
+            gravityUpActive = gravityUpWater;
+            gravityDownActive = gravityDownWater;
+        }
+        else
+        {
+            speedActive = speed;
+            jumpForceActive = jumpForce;
+            gravityUpActive = gravityUp;
+            gravityDownActive = gravityDown;
+        } 
     }
+    
+    public void updateOnSurface()
+    {
+         jumpForceActive = headAboveWater && onWater ? jumpForce : jumpForceActive;
+    }
+    
     
 
 }

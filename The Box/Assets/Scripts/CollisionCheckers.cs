@@ -53,6 +53,10 @@ public class CollisionCheckers : MonoBehaviour
                     case "Feet":
                         Movement.getInstance().OnWater();
                         break;
+                    case "Head":
+                        Movement.getInstance().headAboveWater = false;
+                        Movement.getInstance().updateOnSurface();
+                        break;
                 }
                 break;
         }
@@ -95,6 +99,10 @@ public class CollisionCheckers : MonoBehaviour
                 {
                     case "Feet":
                         Movement.getInstance().OffWater();
+                        break;
+                    case "Head":
+                        Movement.getInstance().headAboveWater = true;
+                        Movement.getInstance().updateOnSurface();
                         break;
                 }
                 break;
