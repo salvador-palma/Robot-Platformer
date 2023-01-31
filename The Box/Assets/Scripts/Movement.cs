@@ -36,6 +36,12 @@ public class Movement : MonoBehaviour
     public float KbForce;
 
     [Header("Timers")]
+    private float jumpBuffer = 0.2f;
+    private float jumpBufferCounter;
+
+    private float coyoteBuffer = 0.2f;
+    private float coyoteBufferCounter;
+
     public float ghostSpawnRate;
     float ghostSpawnRateStart;
     public GameObject ghost;
@@ -64,7 +70,7 @@ public class Movement : MonoBehaviour
     public bool onWater;
     public bool headAboveWater;
     public bool onSurface;
-    bool onWall;
+    
     [Header("Random")]
     public int wallClinged;
     
@@ -141,9 +147,21 @@ public class Movement : MonoBehaviour
         }
         if (!stop_player)
         {
-            if (isGrounded())
+            if (isGround)
             {
                 hasJumped = false;
+                coyoteBufferCounter = coyoteBuffer;
+            }else if(coyoteBufferCounter > 0)
+            {
+                coyoteBufferCounter -= Time.deltaTime;
+            }
+            if (Input.GetButtonDown("Jump"))
+            {
+                jumpBufferCounter = jumpBuffer;
+            }
+            else if(jumpBufferCounter > 0)
+            {
+                jumpBufferCounter -= Time.deltaTime;
             }
 
             horizontalAxis = Input.GetAxis("Horizontal");
@@ -158,33 +176,34 @@ public class Movement : MonoBehaviour
             }
             anim.SetInteger("ActDir", act_dir);
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (jumpBufferCounter>0)
             {
                 anim.SetBool("Jumped", true);
-                if (isGrounded() || onWater)//jump
+                if (coyoteBufferCounter > 0 || onWater)//jump
                 {
+                    jumpBufferCounter = 0f;
                     rb.velocity = new Vector2(rb.velocity.x, jumpForceActive);
                     if (onWater)
                     {
                         anim.Play("SwimReset");
                     }
                 }
-                else if (isWalled() && act_dir == 0)//walljump
+                else if (isWall && act_dir == 0)//walljump
                 {
-                    
+                    jumpBufferCounter = 0f;
                     int w = facingRight ? 1 : -1;
                     rb.velocity = new Vector3(rb.velocity.x + (wallJumpHorizontalForce * ( w  * (-1))), wallJumpForce, 0);
                     canDash = true;
                     Flip();
-                }
+                }/*
                 else if (!hasJumped)//doublejump
                 {
                     hasJumped = true;
                     rb.velocity = new Vector2(rb.velocity.x, doubleJumpForce);
-                }
+                }*/
 
             }
-            else if (Input.GetKeyDown(KeyCode.S) && !isGrounded())//fastfall
+            else if (Input.GetKeyDown(KeyCode.S) && !isGround)//fastfall
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpCancelForce);
             }
@@ -208,13 +227,13 @@ public class Movement : MonoBehaviour
 
             updateGhost();
 
-            if (!isWalled())
+            if (!isWall)
             {
 
                 if (facingRight && act_dir == -1) { Flip(); }
                 if (!facingRight && act_dir == 1) { Flip(); }
             }
-            else if (!isGrounded() && !onWater)
+            else if (!isGround && !onWater)
             {
                 
                 anim.Play("Wall_Slide");
@@ -253,10 +272,10 @@ public class Movement : MonoBehaviour
         }
         if (!stop_player)
         {
-            if (!isGrounded() && rb.velocity.y < 0.5)
+            if (!isGround && rb.velocity.y < 0.5)
             {
                 anim.SetInteger("YDir", -1);
-                if (isWalled())
+                if (isWall)
                 {
                     int w = facingRight ? 1 : -1;
                     if (act_dir != w)
@@ -281,7 +300,7 @@ public class Movement : MonoBehaviour
                     }
                 }
             }
-            else if (!isGrounded())
+            else if (!isGround)
             {
                 anim.SetInteger("YDir", 1);
                 if (act_dir != 0)
@@ -294,7 +313,7 @@ public class Movement : MonoBehaviour
                         rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - gravityUpActive);
                     }
             }
-            else if (isGrounded())
+            else if (isGround)
             {
                 anim.SetInteger("YDir", 0);
                 
@@ -320,14 +339,7 @@ public class Movement : MonoBehaviour
             rb.velocity = Vector3.zero;
         }
     }
-    private bool isGrounded()
-    { 
-        return isGround;
-    }
-    private bool isWalled()
-    {
-        return isWall;
-    }
+    
     public Vector3 getPosition()
     {
         return gameObject.transform.position;
@@ -359,9 +371,6 @@ public class Movement : MonoBehaviour
     }
     private void EndTurnBack()
     {
-
-        
-
         turnBackWaitTimerStart = turnBackWaitTimer;
         isturnBackWait = true;
     }
@@ -418,7 +427,7 @@ public class Movement : MonoBehaviour
         rb.gravityScale = ogGravity;
         rb.velocity = Vector2.zero;
         isDashing = false;
-        if (isGrounded() || onWater) { canDash = true; }
+        if (isGround || onWater) { canDash = true; }
         else if (DashReset)
         {
             DashReset = false;
@@ -427,7 +436,6 @@ public class Movement : MonoBehaviour
     }
     public void Flip()
     {
-
         facingRight = !facingRight;
         Vector3 scale = transform.localScale;
         scale.x *= -1;
@@ -459,6 +467,7 @@ public class Movement : MonoBehaviour
         isHurt = true;
 
         rb.velocity = new Vector2(dir * KbForce, 1f* KbForce);
+
         yield return new WaitForSeconds(HurtTimer);
         anim.SetBool("Hurt", false);
         isHurt = false;

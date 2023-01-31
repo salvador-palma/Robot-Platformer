@@ -36,10 +36,10 @@ public class Water : MonoBehaviour
     public float waveLength;
     public float waveHeight;
     Bounds bounds;
-    BoxCollider2D collider;
+    BoxCollider2D col;
     public void Start()
     {
-        collider = GetComponent<BoxCollider2D>();
+        col = GetComponent<BoxCollider2D>();
         WaterNode = Resources.Load<GameObject>("WaterNode");
         if (hasFoam)
         {
@@ -56,8 +56,8 @@ public class Water : MonoBehaviour
         NodeAmount+=2;
         
         Size = new Vector2Int(NodeAmount, Size.y);
-        collider.size = Size;
-        collider.offset = new Vector2(Size.x / 2, Size.y / 2);
+        col.size = Size;
+        col.offset = new Vector2(Size.x / 2, Size.y / 2);
         for (int i = 0; i!=NodeAmount; i++)
         {
             GameObject go = Instantiate(WaterNode, transform.position, Quaternion.identity);
