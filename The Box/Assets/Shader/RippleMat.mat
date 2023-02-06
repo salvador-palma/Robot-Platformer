@@ -86,5 +86,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RippleCenter: {r: 0.9328408, g: 0.3733889, b: 0, a: 0}
+    - _RippleCenter: {r: 0.6128399, g: 0.2888242, b: 0, a: 0}
   m_BuildTextureStacks: []

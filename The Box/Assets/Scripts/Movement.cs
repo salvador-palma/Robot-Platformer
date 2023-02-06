@@ -102,6 +102,7 @@ public class Movement : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        DontDestroyOnLoad(this.gameObject);
         rb = GetComponent<Rigidbody2D>();
         INSTANCE = this;
         anim = GetComponent<Animator>();
